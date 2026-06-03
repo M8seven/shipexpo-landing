@@ -1,0 +1,1125 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="ShipExpo — Ship your app in hours, not weeks.">
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Scroll progress sidebar -->
+<div id="scroll-progress">
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+  <div class="progress-steps">
+    <div class="progress-step" data-section="hero">01</div>
+    <div class="progress-step" data-section="code-section">02</div>
+    <div class="progress-step" data-section="what-you-get">03</div>
+    <div class="progress-step" data-section="phone-section">04</div>
+    <div class="progress-step" data-section="cta">05</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    shipexpo
+  </div>
+  <ul class="nav-links">
+    <li><a href="#code-section">Stack</a></li>
+    <li><a href="#what-you-get">Includes</a></li>
+    <li><a href="#cta">Pricing</a></li>
+    <li><a href="#cta" class="nav-cta">$ get it &mdash; $99</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-badge" id="hero-badge">
+      <div class="hero-badge-line"></div>
+      Expo + Node.js boilerplate
+    </div>
+
+    <h1 class="hero-h1">
+      <span class="line-wrap"><span class="line-inner">Ship your app</span></span>
+      <span class="line-wrap"><span class="line-inner">in hours,</span></span>
+      <span class="line-wrap"><span class="line-inner"><em>not weeks.</em></span></span>
+    </h1>
+
+    <p class="hero-sub" id="hero-sub">
+      Auth, payments, push notifications, chat, and production deploy &mdash; wired up and working on day one. Every week you spend on setup is a week you're not shipping.
+    </p>
+
+    <div class="hero-actions" id="hero-actions">
+      <a href="#cta" class="btn-primary" data-magnetic>
+        Get ShipExpo
+      </a>
+      <div class="btn-price">
+        <strong>$99</strong>
+        <span>one-time, no subscription</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right" id="hero-terminal">
+    <!-- Mossa 1: glow vivo -->
+    <div class="terminal-glow" id="terminal-glow"></div>
+    <div class="terminal-window">
+      <div class="terminal-titlebar">
+        <div class="terminal-dots">
+          <div class="terminal-dot dot-red"></div>
+          <div class="terminal-dot dot-yellow"></div>
+          <div class="terminal-dot dot-green"></div>
+        </div>
+        <div class="terminal-title">bash &mdash; ~/projects</div>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <!-- Lines injected by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION DIVIDER -->
+<div class="section-divider">
+  <div class="section-divider-line"></div>
+  <div class="section-divider-label">What's inside</div>
+  <div class="section-divider-line"></div>
+</div>
+
+<!-- CODE SECTION -->
+<section id="code-section">
+  <div class="code-header" id="code-header">
+    <div class="scroll-step-label" id="step-02">
+      <span class="step-num">02</span>
+      <span class="step-line"></span>
+      real code, no magic
+    </div>
+    <div class="code-header-label">No abstractions, no vendor lock-in</div>
+    <h2>The boring parts, <em>done right.</em></h2>
+    <p>Every pattern you'd write anyway. Every gotcha already handled. Code you own, no magic classes.</p>
+  </div>
+
+  <div class="code-tabs" id="code-tabs">
+    <button class="code-tab active" data-tab="express">server/auth.ts</button>
+    <button class="code-tab" data-tab="expo">hooks/useAuth.ts</button>
+    <button class="code-tab" data-tab="package">package.json</button>
+  </div>
+
+  <div class="code-panels" id="code-panels">
+
+    <!-- Express auth route -->
+    <div class="code-panel active" data-panel="express">
+      <div class="code-block-outer" id="beam-block">
+        <div class="code-block-inner">
+          <div class="code-block-titlebar">
+            <div class="code-file-name">server/auth.ts</div>
+            <div class="code-lang-badge">TypeScript</div>
+          </div>
+          <pre><span class="cm">// JWT refresh + device token rotation</span>
+<span class="kw">import</span> <span class="pu">{</span> <span class="var">Router</span><span class="pu">,</span> <span class="var">Request</span><span class="pu">,</span> <span class="var">Response</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'express'</span>
+<span class="kw">import</span> <span class="pu">{</span> <span class="fn">signAccess</span><span class="pu">,</span> <span class="fn">signRefresh</span><span class="pu">,</span> <span class="fn">verify</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'../lib/jwt'</span>
+<span class="kw">import</span> <span class="pu">{</span> <span class="var">db</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'../lib/db'</span>
+
+<span class="kw">const</span> <span class="var">router</span> <span class="pu">=</span> <span class="fn">Router</span><span class="pu">()</span>
+
+<span class="var">router</span><span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="str">'/refresh'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span><span class="var">req</span><span class="pu">:</span> <span class="var">Request</span><span class="pu">,</span> <span class="var">res</span><span class="pu">:</span> <span class="var">Response</span><span class="pu">)</span> <span class="pu">=&gt;</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">{</span> <span class="prop">token</span> <span class="pu">}</span> <span class="pu">=</span> <span class="var">req</span><span class="pu">.</span><span class="prop">body</span>
+  <span class="kw">const</span> <span class="var">payload</span> <span class="pu">=</span> <span class="kw">await</span> <span class="fn">verify</span><span class="pu">(</span><span class="var">token</span><span class="pu">,</span> <span class="str">'refresh'</span><span class="pu">)</span>
+
+  <span class="cm">// rotation: old token is invalidated on use</span>
+  <span class="kw">await</span> <span class="var">db</span><span class="pu">.</span><span class="prop">refreshToken</span><span class="pu">.</span><span class="fn">delete</span><span class="pu">({</span> <span class="prop">where</span><span class="pu">:</span> <span class="pu">{</span> <span class="prop">token</span> <span class="pu">}</span> <span class="pu">})</span>
+  <span class="kw">const</span> <span class="var">next</span> <span class="pu">=</span> <span class="kw">await</span> <span class="fn">signRefresh</span><span class="pu">(</span><span class="var">payload</span><span class="pu">.</span><span class="prop">userId</span><span class="pu">)</span>
+
+  <span class="var">res</span><span class="pu">.</span><span class="fn">json</span><span class="pu">({</span>
+    <span class="prop">access</span><span class="pu">:</span>   <span class="kw">await</span> <span class="fn">signAccess</span><span class="pu">(</span><span class="var">payload</span><span class="pu">.</span><span class="prop">userId</span><span class="pu">),</span>
+    <span class="prop">refresh</span><span class="pu">:</span>  <span class="var">next</span><span class="pu">,</span>
+  <span class="pu">})</span>
+<span class="pu">})</span>
+
+<span class="kw">export default</span> <span class="var">router</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expo hook -->
+    <div class="code-panel" data-panel="expo">
+      <div class="code-block-outer">
+        <div class="code-block-inner">
+          <div class="code-block-titlebar">
+            <div class="code-file-name">hooks/useAuth.ts</div>
+            <div class="code-lang-badge">TypeScript</div>
+          </div>
+          <pre><span class="cm">// Secure token storage via expo-secure-store</span>
+<span class="kw">import</span> <span class="pu">{</span> <span class="fn">useState</span><span class="pu">,</span> <span class="fn">useEffect</span><span class="pu">,</span> <span class="fn">useCallback</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> <span class="pu">*</span> <span class="kw">as</span> <span class="var">SecureStore</span> <span class="kw">from</span> <span class="str">'expo-secure-store'</span>
+<span class="kw">import</span> <span class="pu">{</span> <span class="var">api</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'../lib/api'</span>
+
+<span class="kw">export function</span> <span class="fn">useAuth</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span><span class="var">user</span><span class="pu">,</span> <span class="fn">setUser</span><span class="pu">]</span> <span class="pu">=</span> <span class="fn">useState</span><span class="pu">&lt;</span><span class="var">User</span> <span class="pu">|</span> <span class="kw">null</span><span class="pu">&gt;(</span><span class="kw">null</span><span class="pu">)</span>
+
+  <span class="fn">useEffect</span><span class="pu">(() =&gt;</span> <span class="pu">{</span>
+    <span class="var">SecureStore</span><span class="pu">.</span><span class="fn">getItemAsync</span><span class="pu">(</span><span class="str">'access_token'</span><span class="pu">)</span>
+      <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span><span class="var">token</span> <span class="pu">=&gt;</span> <span class="var">token</span> <span class="pu">&amp;&amp;</span> <span class="var">api</span><span class="pu">.</span><span class="fn">me</span><span class="pu">(</span><span class="var">token</span><span class="pu">))</span>
+      <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span><span class="fn">setUser</span><span class="pu">)</span>
+  <span class="pu">},</span> <span class="pu">[])</span>
+
+  <span class="kw">const</span> <span class="fn">signOut</span> <span class="pu">=</span> <span class="fn">useCallback</span><span class="pu">(</span><span class="kw">async</span> <span class="pu">() =&gt;</span> <span class="pu">{</span>
+    <span class="kw">await</span> <span class="var">SecureStore</span><span class="pu">.</span><span class="fn">deleteItemAsync</span><span class="pu">(</span><span class="str">'access_token'</span><span class="pu">)</span>
+    <span class="kw">await</span> <span class="var">SecureStore</span><span class="pu">.</span><span class="fn">deleteItemAsync</span><span class="pu">(</span><span class="str">'refresh_token'</span><span class="pu">)</span>
+    <span class="fn">setUser</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+  <span class="pu">},</span> <span class="pu">[])</span>
+
+  <span class="kw">return</span> <span class="pu">{</span> <span class="prop">user</span><span class="pu">,</span> <span class="fn">signOut</span> <span class="pu">}</span>
+<span class="pu">}</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- package.json -->
+    <div class="code-panel" data-panel="package">
+      <div class="code-block-outer">
+        <div class="code-block-inner">
+          <div class="code-block-titlebar">
+            <div class="code-file-name">package.json</div>
+            <div class="code-lang-badge">JSON</div>
+          </div>
+          <pre><span class="pu">{</span>
+  <span class="prop">"name"</span><span class="pu">:</span>        <span class="str">"my-app"</span><span class="pu">,</span>
+  <span class="prop">"version"</span><span class="pu">:</span>     <span class="str">"1.0.0"</span><span class="pu">,</span>
+  <span class="prop">"dependencies"</span><span class="pu">:</span> <span class="pu">{</span>
+    <span class="prop">"expo"</span><span class="pu">:</span>                      <span class="str">"~52.0.0"</span><span class="pu">,</span>
+    <span class="prop">"expo-router"</span><span class="pu">:</span>              <span class="str">"~4.0.0"</span><span class="pu">,</span>
+    <span class="prop">"expo-secure-store"</span><span class="pu">:</span>        <span class="str">"~14.0.0"</span><span class="pu">,</span>
+    <span class="prop">"expo-notifications"</span><span class="pu">:</span>       <span class="str">"~0.29.0"</span><span class="pu">,</span>
+    <span class="prop">"stripe"</span><span class="pu">:</span>                    <span class="str">"^16.0.0"</span><span class="pu">,</span>
+    <span class="prop">"@stripe/stripe-react-native"</span><span class="pu">:</span> <span class="str">"0.39.0"</span><span class="pu">,</span>
+    <span class="cm">// server</span>
+    <span class="prop">"express"</span><span class="pu">:</span>                   <span class="str">"^4.21.0"</span><span class="pu">,</span>
+    <span class="prop">"@prisma/client"</span><span class="pu">:</span>            <span class="str">"^6.0.0"</span><span class="pu">,</span>
+    <span class="prop">"socket.io"</span><span class="pu">:</span>                 <span class="str">"^4.8.0"</span><span class="pu">,</span>
+    <span class="prop">"jsonwebtoken"</span><span class="pu">:</span>              <span class="str">"^9.0.0"</span>
+  <span class="pu">},</span>
+  <span class="prop">"scripts"</span><span class="pu">:</span> <span class="pu">{</span>
+    <span class="prop">"dev"</span><span class="pu">:</span>     <span class="str">"concurrently \"expo start\" \"npm run server\""</span><span class="pu">,</span>
+    <span class="prop">"server"</span><span class="pu">:</span>  <span class="str">"tsx watch server/index.ts"</span><span class="pu">,</span>
+    <span class="prop">"deploy"</span><span class="pu">:</span>  <span class="str">"eas build --platform all &amp;&amp; fly deploy"</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div id="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-number"><span>~</span>3h</div>
+      <div class="stat-label">From clone to first production deploy</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">6<span>+</span></div>
+      <div class="stat-label">Core modules wired and tested</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span>0</span></div>
+      <div class="stat-label">Vendor lock-in. Your code, your infrastructure</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">$<span>99</span></div>
+      <div class="stat-label">Once. No monthly fee. No seat limits</div>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT YOU GET -->
+<section id="what-you-get">
+  <div class="wyg-header" id="wyg-header">
+    <div class="scroll-step-label" id="step-03">
+      <span class="step-num">03</span>
+      <span class="step-line"></span>
+      what ships with it
+    </div>
+    <div class="wyg-header-label">Everything included</div>
+    <h2>No assembly required.</h2>
+  </div>
+
+  <div class="wyg-grid">
+    <div class="wyg-item">
+      <div class="wyg-item-tag">auth</div>
+      <h3>JWT + refresh rotation</h3>
+      <p>Secure token storage on device, server-side session management, device tracking, password reset flow.</p>
+      <div class="wyg-item-stack">
+        <span class="stack-tag">expo-secure-store</span>
+        <span class="stack-tag">express</span>
+        <span class="stack-tag">prisma</span>
+      </div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-item-tag">payments</div>
+      <h3>Stripe subscriptions</h3>
+      <p>One-time and recurring payments, webhook handling, entitlement gating, Stripe Customer Portal.</p>
+      <div class="wyg-item-stack">
+        <span class="stack-tag">stripe</span>
+        <span class="stack-tag">stripe-react-native</span>
+      </div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-item-tag">push</div>
+      <h3>Push notifications</h3>
+      <p>Expo push + FCM/APNs fallback, per-user topic subscriptions, server-side send utilities.</p>
+      <div class="wyg-item-stack">
+        <span class="stack-tag">expo-notifications</span>
+        <span class="stack-tag">expo-push-service</span>
+      </div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-item-tag">realtime</div>
+      <h3>Chat + live data</h3>
+      <p>Socket.io rooms, message persistence, typing indicators, presence. Drop your own domain logic on top.</p>
+      <div class="wyg-item-stack">
+        <span class="stack-tag">socket.io</span>
+        <span class="stack-tag">redis</span>
+      </div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-item-tag">deploy</div>
+      <h3>One-command deploy</h3>
+      <p>EAS build for iOS + Android. Fly.io config for the server. GitHub Actions CI. Docker-ready.</p>
+      <div class="wyg-item-stack">
+        <span class="stack-tag">eas</span>
+        <span class="stack-tag">fly.io</span>
+        <span class="stack-tag">docker</span>
+      </div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-item-tag">dx</div>
+      <h3>Dev toolchain</h3>
+      <p>TypeScript end-to-end, Prettier + ESLint, env validation with zod, shared types client/server.</p>
+      <div class="wyg-item-stack">
+        <span class="stack-tag">typescript</span>
+        <span class="stack-tag">zod</span>
+        <span class="stack-tag">tsx</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHONE SECTION -->
+<div class="section-divider">
+  <div class="section-divider-line"></div>
+  <div class="section-divider-label">The output</div>
+  <div class="section-divider-line"></div>
+</div>
+
+<section id="phone-section">
+  <div class="phone-copy" id="phone-copy">
+    <div class="scroll-step-label" id="step-04">
+      <span class="step-num">04</span>
+      <span class="step-line"></span>
+      code becomes product
+    </div>
+    <div class="phone-copy-label">From terminal to screen</div>
+    <h2>The boilerplate <em>disappears.</em></h2>
+    <p>When the scaffold is already working, you start on line one of your actual product. Not line two thousand of plumbing.</p>
+
+    <div class="phone-build-steps">
+      <div class="build-step" id="bstep-1">
+        <span class="build-step-num">01</span>
+        <div class="build-step-text"><strong>npx create-shipexpo</strong> clones the working app</div>
+      </div>
+      <div class="build-step" id="bstep-2">
+        <span class="build-step-num">02</span>
+        <div class="build-step-text"><strong>npm run dev</strong> spins up Expo + Express together</div>
+      </div>
+      <div class="build-step" id="bstep-3">
+        <span class="build-step-num">03</span>
+        <div class="build-step-text"><strong>fly deploy</strong> ships a production binary in minutes</div>
+      </div>
+      <div class="build-step" id="bstep-4">
+        <span class="build-step-num">04</span>
+        <div class="build-step-text">You write the part that's <strong>actually yours</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone mockup -->
+  <div class="phone-frame-wrap" id="phone-frame-wrap">
+    <div class="phone-frame" id="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <!-- Screen overlay: starts black, fades out when "lit" -->
+        <div class="phone-screen-overlay off" id="phone-overlay"></div>
+
+        <!-- App header -->
+        <div class="app-header" id="app-header">
+          <div class="app-header-logo">shipexpo</div>
+          <div class="app-header-dot"></div>
+        </div>
+
+        <!-- Chat list -->
+        <div class="app-list" id="app-list">
+          <div class="app-list-item" id="ali-1">
+            <div class="app-list-avatar accent"></div>
+            <div class="app-list-text">
+              <div class="app-list-name">General</div>
+              <div class="app-list-msg">connected via socket.io</div>
+            </div>
+            <div class="app-list-time">now</div>
+            <div class="app-list-badge" id="ali-badge-1">3</div>
+          </div>
+          <div class="app-list-item" id="ali-2">
+            <div class="app-list-avatar"></div>
+            <div class="app-list-text">
+              <div class="app-list-name">Payments</div>
+              <div class="app-list-msg">stripe webhook received</div>
+            </div>
+            <div class="app-list-time">1m</div>
+          </div>
+          <div class="app-list-item" id="ali-3">
+            <div class="app-list-avatar"></div>
+            <div class="app-list-text">
+              <div class="app-list-name">Notifications</div>
+              <div class="app-list-msg">push registered: ok</div>
+            </div>
+            <div class="app-list-time">3m</div>
+          </div>
+          <div class="app-list-item" id="ali-4">
+            <div class="app-list-avatar"></div>
+            <div class="app-list-text">
+              <div class="app-list-name">Deploy</div>
+              <div class="app-list-msg">fly: v8 live</div>
+            </div>
+            <div class="app-list-time">5m</div>
+          </div>
+        </div>
+
+        <!-- Bottom CTA bar -->
+        <div class="app-bottom-bar" id="app-bottom">
+          <div class="app-btn" id="app-btn">open app</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-inner" id="cta-inner">
+    <div class="scroll-step-label" id="step-05" style="justify-content:center;">
+      <span class="step-num">05</span>
+      <span class="step-line"></span>
+      ready to ship
+    </div>
+    <div class="cta-label">Ready to ship</div>
+    <h2 class="cta-h2">Stop rebuilding the same things.</h2>
+    <p class="cta-sub">Every project starts with auth, payments, and infra. You know this. Buy it once, keep all the code, ship the part that's actually yours.</p>
+
+    <div class="cta-pricing-block">
+      <div class="cta-price-amount">
+        <div class="cta-price-num">$99</div>
+        <div class="cta-price-label">one-time payment</div>
+      </div>
+      <div class="cta-price-divider"></div>
+      <div class="cta-price-features">
+        <span>Full source code</span>
+        <span>Lifetime updates</span>
+        <span>No license restrictions</span>
+        <span>MIT licensed</span>
+      </div>
+    </div>
+
+    <br><br>
+    <a href="#" class="btn-cta-main" data-magnetic>
+      npx create-shipexpo my-app
+    </a>
+
+    <div class="cta-guarantee">30-day refund, no questions asked.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">shipexpo v1.0</div>
+  <ul class="footer-links">
+    <li><a href="#">Docs</a></li>
+    <li><a href="#">GitHub</a></li>
+    <li><a href="#">License</a></li>
+    <li><a href="mailto:hi@shipexpo.dev">Contact</a></li>
+  </ul>
+</footer>
+
+<script is:inline>
+(function() {
+  'use strict';
+
+  // ---- LENIS SMOOTH SCROLL (guarded: must never block the hero reveal) ----
+  try {
+    var lenis = new Lenis({
+      duration: 1.1,
+      easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+      smooth: true,
+    });
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(function(time) { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+  } catch (e) { /* no smooth scroll, page still renders */ }
+
+  // ---- GSAP REGISTER ----
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ---- NAV scroll state ----
+  var nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 40) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // ---- HERO ANIMATION ----
+  // hero-terminal starts offset — guarded so a GSAP hiccup never leaves the hero blank
+  try {
+    gsap.set('#hero-terminal', { x: 40 });
+
+    var tl = gsap.timeline({ delay: 0.2 });
+
+    tl.to('#hero-badge', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' });
+
+    var lines = document.querySelectorAll('.hero-h1 .line-inner');
+    tl.to(lines, {
+      y: '0%',
+      duration: 0.85,
+      stagger: 0.12,
+      ease: 'expo.out',
+    }, '-=0.3');
+
+    tl.to(['#hero-sub', '#hero-actions'], {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: 'power2.out',
+    }, '-=0.3');
+
+    tl.to('#hero-terminal', {
+      opacity: 1,
+      x: 0,
+      duration: 0.8,
+      ease: 'power3.out',
+    }, '-=0.8');
+  } catch (e) {
+    ['#hero-badge', '#hero-sub', '#hero-actions', '#hero-terminal'].forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (el) { el.style.opacity = 1; el.style.transform = 'none'; }
+    });
+    document.querySelectorAll('.hero-h1 .line-inner').forEach(function (el) { el.style.transform = 'none'; });
+  }
+
+  // ---- TERMINAL TYPING ----
+  var terminalBody = document.getElementById('terminal-body');
+
+  var SCRIPT = [
+    { type: 'cmd',   text: 'npx create-shipexpo my-app',            delay: 0 },
+    { type: 'out',   text: '',                                       delay: 40 },
+    { type: 'dim',   text: 'cloning a real, shipped app...',         delay: 300 },
+    { type: 'out',   text: '',                                       delay: 120 },
+    { type: 'ok',    text: 'auth  ·  Apple, Google, magic link',     note: '~3 days', delay: 150 },
+    { type: 'ok',    text: 'payments  ·  IAP + RevenueCat',          note: '~2 days', delay: 150 },
+    { type: 'ok',    text: 'push notifications',                     note: '~1 day',  delay: 150 },
+    { type: 'ok',    text: 'streaming AI chat',                      note: '~2 days', delay: 150 },
+    { type: 'ok',    text: 'deploy config + CI',                     note: '~1 day',  delay: 150 },
+    { type: 'out',   text: '',                                       delay: 250 },
+    { type: 'ready', text: 'ready in 4.2s',  note: '9 days of setup, skipped', delay: 0 },
+  ];
+
+  var CHAR_DELAY_CMD = 45;
+  var LOOP_PAUSE = 2800;
+
+  function clearTerminal() {
+    terminalBody.innerHTML = '';
+  }
+
+  function makeLineEl(type, text, note) {
+    var div = document.createElement('div');
+    div.classList.add('terminal-line');
+
+    if (type === 'cmd') {
+      var ps = document.createElement('span');
+      ps.className = 'prompt-sym';
+      ps.textContent = '>';
+      div.appendChild(ps);
+      var txt = document.createElement('span');
+      txt.className = 'term-text';
+      div.appendChild(txt);
+      return { el: div, textSpan: txt };
+    }
+
+    if (type === 'ok') {
+      var row = document.createElement('span');
+      row.className = 'term-output';
+      row.style.display = 'flex';
+      row.style.width = '100%';
+      row.style.alignItems = 'baseline';
+      row.style.gap = '12px';
+      var mark = document.createElement('span');
+      mark.className = 'term-ok';
+      mark.textContent = '  ok';
+      var label = document.createElement('span');
+      label.style.color = 'var(--text)';
+      label.textContent = text;
+      row.appendChild(mark);
+      row.appendChild(label);
+      if (note) {
+        var nt = document.createElement('span');
+        nt.style.color = 'var(--muted)';
+        nt.style.marginLeft = 'auto';
+        nt.style.whiteSpace = 'nowrap';
+        nt.textContent = 'normally ' + note;
+        row.appendChild(nt);
+      }
+      div.appendChild(row);
+      return { el: div, textSpan: null };
+    }
+
+    if (type === 'dim') {
+      var sp2 = document.createElement('span');
+      sp2.className = 'term-output term-dim';
+      sp2.textContent = '  ' + text;
+      div.appendChild(sp2);
+      return { el: div, textSpan: null };
+    }
+
+    if (type === 'ready') {
+      var row2 = document.createElement('span');
+      row2.className = 'term-output';
+      row2.style.display = 'flex';
+      row2.style.width = '100%';
+      row2.style.alignItems = 'baseline';
+      row2.style.gap = '12px';
+      var sp3 = document.createElement('span');
+      sp3.className = 'term-ok';
+      sp3.style.fontWeight = '500';
+      sp3.textContent = '  ' + text;
+      row2.appendChild(sp3);
+      if (note) {
+        var nt2 = document.createElement('span');
+        nt2.style.color = 'var(--accent)';
+        nt2.style.marginLeft = 'auto';
+        nt2.style.fontWeight = '500';
+        nt2.style.whiteSpace = 'nowrap';
+        nt2.textContent = note;
+        row2.appendChild(nt2);
+      }
+      var cursor = document.createElement('span');
+      cursor.className = 'cursor-blink';
+      row2.appendChild(cursor);
+      div.appendChild(row2);
+      return { el: div, textSpan: null };
+    }
+
+    // 'out'
+    var sp4 = document.createElement('span');
+    sp4.className = 'term-output';
+    sp4.textContent = text ? '  ' + text : '';
+    div.appendChild(sp4);
+    return { el: div, textSpan: null };
+  }
+
+  function typeText(span, text, charDelay, done) {
+    var i = 0;
+    var cursor = document.createElement('span');
+    cursor.className = 'cursor-blink';
+    span.parentNode.appendChild(cursor);
+
+    function step() {
+      if (i < text.length) {
+        span.textContent += text[i];
+        i++;
+        setTimeout(step, charDelay + (Math.random() * 20 - 10));
+      } else {
+        cursor.remove();
+        if (done) done();
+      }
+    }
+    step();
+  }
+
+  function runScript(lines, idx, onDone) {
+    if (idx >= lines.length) {
+      if (onDone) onDone();
+      return;
+    }
+
+    var step = lines[idx];
+    var built = makeLineEl(step.type, step.text, step.note);
+    terminalBody.appendChild(built.el);
+
+    terminalBody.scrollTop = terminalBody.scrollHeight;
+
+    function next() {
+      var d = step.delay || 60;
+      setTimeout(function() {
+        runScript(lines, idx + 1, onDone);
+      }, d);
+    }
+
+    if (step.type === 'cmd' && built.textSpan) {
+      setTimeout(function() {
+        typeText(built.textSpan, step.text, CHAR_DELAY_CMD, next);
+      }, 60);
+    } else {
+      next();
+    }
+  }
+
+  function loopTerminal() {
+    clearTerminal();
+    runScript(SCRIPT, 0, function() {
+      setTimeout(loopTerminal, LOOP_PAUSE);
+    });
+  }
+
+  setTimeout(loopTerminal, 1200);
+
+  // ---- CODE TABS ----
+  var tabs = document.querySelectorAll('.code-tab');
+  var panels = document.querySelectorAll('.code-panel');
+  var beamBlock = document.getElementById('beam-block');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      panels.forEach(function(p) { p.classList.remove('active'); });
+
+      tab.classList.add('active');
+      var target = tab.getAttribute('data-tab');
+      var panel = document.querySelector('[data-panel="' + target + '"]');
+      if (panel) {
+        panel.classList.add('active');
+        var outerBlock = panel.querySelector('.code-block-outer');
+        if (outerBlock) {
+          outerBlock.classList.add('beam-active');
+          setTimeout(function() {
+            outerBlock.classList.remove('beam-active');
+          }, 3000);
+        }
+      }
+    });
+  });
+
+  // ---- MOSSA 1: GLOW MOUSE TRACKING ----
+  try {
+    var glowEl = document.getElementById('terminal-glow');
+    var heroTerminal = document.getElementById('hero-terminal');
+
+    if (glowEl && heroTerminal) {
+      var glowX = 50, glowY = 50;
+      var targetX = 50, targetY = 50;
+      var glowActive = false;
+
+      heroTerminal.addEventListener('mouseenter', function() { glowActive = true; });
+      heroTerminal.addEventListener('mouseleave', function() {
+        glowActive = false;
+        targetX = 50; targetY = 50;
+      });
+
+      document.addEventListener('mousemove', function(e) {
+        if (!glowActive) return;
+        var rect = heroTerminal.getBoundingClientRect();
+        targetX = ((e.clientX - rect.left) / rect.width) * 100;
+        targetY = ((e.clientY - rect.top) / rect.height) * 100;
+      }, { passive: true });
+
+      function animateGlow() {
+        // lerp toward target
+        glowX += (targetX - glowX) * 0.08;
+        glowY += (targetY - glowY) * 0.08;
+        glowEl.style.background =
+          'radial-gradient(ellipse 70% 60% at ' + glowX.toFixed(1) + '% ' + glowY.toFixed(1) + '%, ' +
+          'rgba(0, 217, 126, 0.22) 0%, rgba(0, 217, 126, 0.08) 40%, transparent 75%)';
+        requestAnimationFrame(animateGlow);
+      }
+      requestAnimationFrame(animateGlow);
+    }
+  } catch(e) { /* glow mouse tracking failed silently */ }
+
+  // ---- TERMINAL WINDOW hover glow ----
+  try {
+    var termWin = document.querySelector('.terminal-window');
+    if (termWin) {
+      termWin.addEventListener('mouseenter', function() {
+        gsap.to(termWin, {
+          boxShadow: '0 0 0 1px rgba(0,0,0,0.5), 0 24px 80px rgba(0,0,0,0.6), 0 0 80px rgba(0, 217, 126, 0.15)',
+          duration: 0.4,
+          ease: 'power2.out',
+        });
+      });
+      termWin.addEventListener('mouseleave', function() {
+        gsap.to(termWin, {
+          boxShadow: '0 0 0 1px rgba(0,0,0,0.5), 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0, 217, 126, 0.04)',
+          duration: 0.5,
+          ease: 'power2.out',
+        });
+      });
+    }
+  } catch(e) {}
+
+  // ---- MOSSA 4b: CUSTOM CURSOR ----
+  try {
+    var cursorDot  = document.getElementById('cursor');
+    var cursorRing = document.getElementById('cursor-ring');
+
+    if (cursorDot && cursorRing && window.matchMedia('(pointer: fine)').matches) {
+      var cx = 0, cy = 0;
+      var rx = 0, ry = 0;
+
+      document.addEventListener('mousemove', function(e) {
+        cx = e.clientX; cy = e.clientY;
+        cursorDot.style.left = cx + 'px';
+        cursorDot.style.top  = cy + 'px';
+      }, { passive: true });
+
+      function animateRing() {
+        rx += (cx - rx) * 0.14;
+        ry += (cy - ry) * 0.14;
+        cursorRing.style.left = rx + 'px';
+        cursorRing.style.top  = ry + 'px';
+        requestAnimationFrame(animateRing);
+      }
+      requestAnimationFrame(animateRing);
+
+      var hoverTargets = document.querySelectorAll('a, button, [data-magnetic]');
+      hoverTargets.forEach(function(el) {
+        el.addEventListener('mouseenter', function() {
+          cursorDot.classList.add('hover');
+          cursorRing.classList.add('hover');
+        });
+        el.addEventListener('mouseleave', function() {
+          cursorDot.classList.remove('hover');
+          cursorRing.classList.remove('hover');
+        });
+      });
+    } else {
+      // fine pointer not available, hide cursor elements
+      if (cursorDot)  cursorDot.style.display  = 'none';
+      if (cursorRing) cursorRing.style.display = 'none';
+    }
+  } catch(e) {}
+
+  // ---- MOSSA 4b: MAGNETIC BUTTONS ----
+  try {
+    var magnetBtns = document.querySelectorAll('[data-magnetic]');
+    if (true) { // TODO pre-launch: ripristinare window.matchMedia prefers-reduced-motion
+      magnetBtns.forEach(function(btn) {
+        var bx = 0, by = 0;
+        var tbx = 0, tby = 0;
+        var animId;
+
+        function animMag() {
+          bx += (tbx - bx) * 0.14;
+          by += (tby - by) * 0.14;
+          btn.style.transform = 'translate(' + bx.toFixed(2) + 'px, ' + by.toFixed(2) + 'px)';
+          if (Math.abs(tbx - bx) > 0.1 || Math.abs(tby - by) > 0.1) {
+            animId = requestAnimationFrame(animMag);
+          }
+        }
+
+        btn.addEventListener('mousemove', function(e) {
+          var rect = btn.getBoundingClientRect();
+          var relX = e.clientX - rect.left - rect.width / 2;
+          var relY = e.clientY - rect.top  - rect.height / 2;
+          tbx = relX * 0.32;
+          tby = relY * 0.32;
+          cancelAnimationFrame(animId);
+          animId = requestAnimationFrame(animMag);
+        });
+
+        btn.addEventListener('mouseleave', function() {
+          tbx = 0; tby = 0;
+          cancelAnimationFrame(animId);
+          animId = requestAnimationFrame(animMag);
+        });
+      });
+    }
+  } catch(e) {}
+
+  // ---- MOSSA 2: SCROLL PROGRESS ----
+  try {
+    var progressFill    = document.getElementById('progress-fill');
+    var progressWidget  = document.getElementById('scroll-progress');
+    var progressSteps   = document.querySelectorAll('.progress-step');
+    var sectionIds      = ['hero','code-section','what-you-get','phone-section','cta'];
+
+    window.addEventListener('scroll', function() {
+      var scrollTop    = window.scrollY;
+      var docHeight    = document.documentElement.scrollHeight - window.innerHeight;
+      var pct          = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+      if (progressFill) progressFill.style.height = pct + '%';
+      if (progressWidget) {
+        if (scrollTop > 100) progressWidget.classList.add('visible');
+        else progressWidget.classList.remove('visible');
+      }
+
+      // activate section step
+      sectionIds.forEach(function(id, i) {
+        var el = document.getElementById(id);
+        if (!el || !progressSteps[i]) return;
+        var top = el.getBoundingClientRect().top;
+        if (top < window.innerHeight * 0.6) {
+          progressSteps[i].classList.add('active');
+        } else {
+          progressSteps[i].classList.remove('active');
+        }
+      });
+    }, { passive: true });
+  } catch(e) {}
+
+  // ---- REDUCED MOTION CHECK ----
+  var prefersReduced = false; // TODO pre-launch: ripristinare window.matchMedia prefers-reduced-motion
+
+  // ---- SCROLL ANIMATIONS ----
+  // Tutti i reveal sono bidirezionali (play none none reverse) tranne la hero.
+  // Con prefersReduced: gli elementi partono gia' visibili, niente pin/scrub.
+
+  if (prefersReduced) {
+    // Accessibilita': mostra tutto subito, niente pin/scrub/reverse
+    try {
+      var allHidden = document.querySelectorAll(
+        '#code-header, #code-tabs, #code-panels, .stat-item, #wyg-header, .wyg-item, ' +
+        '#phone-copy, .build-step, #phone-frame-wrap, #app-header, #ali-1, #ali-2, ' +
+        '#ali-3, #ali-4, #app-bottom, #app-btn, #ali-badge-1, #cta-inner, ' +
+        '.scroll-step-label'
+      );
+      allHidden.forEach(function(el) {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+      var overlay = document.getElementById('phone-overlay');
+      var frame   = document.getElementById('phone-frame');
+      if (overlay) { overlay.classList.remove('off'); overlay.classList.add('on'); }
+      if (frame)   frame.classList.add('lit');
+    } catch(e) {}
+
+  } else {
+
+    // ---- STEP LABEL REVEAL HELPER (bidirezionale) ----
+    function revealStepLabel(id, trigger) {
+      try {
+        var el = document.getElementById(id);
+        if (!el) return;
+        gsap.set(el, { opacity: 0, x: -12 });
+        ScrollTrigger.create({
+          trigger: trigger || el,
+          start: 'top 82%',
+          end: 'top 20%',
+          onEnter:     function() { gsap.to(el, { opacity: 1, x: 0,   duration: 0.5, ease: 'power2.out' }); },
+          onLeaveBack: function() { gsap.to(el, { opacity: 0, x: -12, duration: 0.35, ease: 'power2.in' }); },
+        });
+      } catch(e) {}
+    }
+
+    // ---- CODE SECTION HEADER (bidirezionale) ----
+    try {
+      gsap.set('#code-header', { opacity: 0, y: 30 });
+      ScrollTrigger.create({
+        trigger: '#code-header',
+        start: 'top 80%',
+        end: 'top 15%',
+        onEnter:     function() { gsap.to('#code-header', { opacity: 1, y: 0,  duration: 0.7, ease: 'power2.out' }); },
+        onLeaveBack: function() { gsap.to('#code-header', { opacity: 0, y: 30, duration: 0.45, ease: 'power2.in' }); },
+      });
+      revealStepLabel('step-02', '#code-header');
+    } catch(e) {}
+
+    // ---- CODE TABS + PANELS (bidirezionale) ----
+    try {
+      gsap.set(['#code-tabs', '#code-panels'], { opacity: 0, y: 20 });
+      var beamFired = false;
+      ScrollTrigger.create({
+        trigger: '#code-tabs',
+        start: 'top 82%',
+        end: 'top 10%',
+        onEnter: function() {
+          gsap.to(['#code-tabs', '#code-panels'], {
+            opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: 'power2.out',
+            onComplete: function() {
+              if (!beamFired && beamBlock) {
+                beamFired = true;
+                beamBlock.classList.add('beam-active');
+                setTimeout(function() { beamBlock.classList.remove('beam-active'); }, 3000);
+              }
+            }
+          });
+        },
+        onLeaveBack: function() {
+          gsap.to(['#code-panels', '#code-tabs'], { opacity: 0, y: 20, duration: 0.4, stagger: 0.08, ease: 'power2.in' });
+        },
+      });
+    } catch(e) {}
+
+    // ---- STATS STRIP — accumulo bidirezionale con stagger ----
+    try {
+      var statItems = document.querySelectorAll('.stat-item');
+      gsap.set(statItems, { opacity: 0, y: 20 });
+      ScrollTrigger.create({
+        trigger: '#stats-strip',
+        start: 'top 80%',
+        end: 'top 10%',
+        onEnter:     function() { gsap.to(statItems, { opacity: 1, y: 0,  duration: 0.55, stagger: 0.1,  ease: 'power2.out' }); },
+        onLeaveBack: function() { gsap.to(Array.from(statItems).reverse(), { opacity: 0, y: 20, duration: 0.35, stagger: 0.07, ease: 'power2.in' }); },
+      });
+    } catch(e) {}
+
+    // ---- WYG HEADER (bidirezionale) ----
+    try {
+      gsap.set('#wyg-header', { opacity: 0, y: 30 });
+      ScrollTrigger.create({
+        trigger: '#wyg-header',
+        start: 'top 80%',
+        end: 'top 15%',
+        onEnter:     function() { gsap.to('#wyg-header', { opacity: 1, y: 0,  duration: 0.7,  ease: 'power2.out' }); },
+        onLeaveBack: function() { gsap.to('#wyg-header', { opacity: 0, y: 30, duration: 0.45, ease: 'power2.in' }); },
+      });
+      revealStepLabel('step-03', '#wyg-header');
+    } catch(e) {}
+
+    // ---- WYG GRID — PIN + accumulo card una a una ----
+    // Le 6 card entrano in sequenza mentre scrolli (la scena resta ferma ~1 viewport).
+    // Tornando su, si eliminano in ordine inverso.
+    try {
+      var wygItems = Array.from(document.querySelectorAll('.wyg-item'));
+      gsap.set(wygItems, { opacity: 0, y: 24 });
+
+      var wygSection = document.getElementById('what-you-get');
+      if (wygSection) {
+        // Pin per tutta la durata delle 6 card + un po' di respiro
+        var wygPinTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: wygSection,
+            start: 'top top',
+            end: '+=' + (wygItems.length * 120 + 80) + 'px',
+            pin: true,
+            scrub: 1,
+            anticipatePin: 1,
+          }
+        });
+
+        wygItems.forEach(function(item, i) {
+          wygPinTl.to(item, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, i * 0.55);
+        });
+      }
+    } catch(e) {}
+
+    // ---- PHONE SECTION — PIN + scrub materializzazione ----
+    // Il telefono si "costruisce" fluido mentre scrolli verso di esso.
+    // Tornando su si smonta.
+    try {
+      var phoneSection = document.getElementById('phone-section');
+      if (phoneSection) {
+
+        // Reset stato iniziale
+        gsap.set('#phone-copy',      { opacity: 0, x: -24 });
+        gsap.set(['#bstep-1','#bstep-2','#bstep-3','#bstep-4'], { opacity: 0, x: -12 });
+        gsap.set('#phone-frame-wrap', { opacity: 0, y: 40, scale: 0.92 });
+        gsap.set('#app-header',  { opacity: 0, y: -8 });
+        gsap.set(['#ali-1','#ali-2','#ali-3','#ali-4'], { opacity: 0, x: -10 });
+        gsap.set('#app-bottom',  { opacity: 0, y: 8 });
+        gsap.set('#app-btn',     { opacity: 0 });
+        gsap.set('#ali-badge-1', { opacity: 0, scale: 0 });
+        var phoneOverlay = document.getElementById('phone-overlay');
+        var phoneFrame   = document.getElementById('phone-frame');
+        // Rimuovi classi CSS che usano transition (GSAP prende controllo diretto via inline style)
+        if (phoneOverlay) {
+          phoneOverlay.classList.remove('on');
+          phoneOverlay.classList.remove('off');
+          gsap.set(phoneOverlay, { opacity: 1 }); // schermo nero all'inizio
+        }
+        if (phoneFrame) phoneFrame.classList.remove('lit');
+
+        // Label step-04 — bidirezionale come gli altri
+        revealStepLabel('step-04', phoneSection);
+
+        // PIN: la sezione resta ferma mentre lo scroll costruisce la scena
+        var phonePinTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: phoneSection,
+            start: 'top top',
+            end: '+=700px',
+            pin: true,
+            scrub: 1.2,
+            anticipatePin: 1,
+            onUpdate: function(self) {
+              // Sincronizza la classe .lit del frame con lo scrub (>50% = acceso)
+              if (phoneFrame) {
+                if (self.progress > 0.50) phoneFrame.classList.add('lit');
+                else phoneFrame.classList.remove('lit');
+              }
+            },
+          }
+        });
+
+        // 0-0.30: phone copy entra da sinistra
+        phonePinTl.to('#phone-copy', { opacity: 1, x: 0, duration: 0.3, ease: 'power2.out' }, 0);
+
+        // 0.05-0.35: build steps accumulano uno a uno
+        phonePinTl.to('#bstep-1', { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.05);
+        phonePinTl.to('#bstep-2', { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.15);
+        phonePinTl.to('#bstep-3', { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.25);
+        phonePinTl.to('#bstep-4', { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.35);
+
+        // 0.30-0.52: telefono si materializza (sale + scale)
+        phonePinTl.to('#phone-frame-wrap', { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'expo.out' }, 0.30);
+
+        // 0.50-0.58: schermo si accende (overlay fade out, controllato via scrub)
+        if (phoneOverlay) {
+          phonePinTl.to(phoneOverlay, { opacity: 0, duration: 0.18, ease: 'none' }, 0.50);
+        }
+
+        // 0.55-0.93: elementi app entrano in stagger (accumulo)
+        phonePinTl.to('#app-header', { opacity: 1, y: 0,  duration: 0.12, ease: 'power2.out' }, 0.55);
+        phonePinTl.to('#ali-1',      { opacity: 1, x: 0,  duration: 0.12, ease: 'power2.out' }, 0.62);
+        phonePinTl.to('#ali-2',      { opacity: 1, x: 0,  duration: 0.12, ease: 'power2.out' }, 0.68);
+        phonePinTl.to('#ali-3',      { opacity: 1, x: 0,  duration: 0.12, ease: 'power2.out' }, 0.74);
+        phonePinTl.to('#ali-4',      { opacity: 1, x: 0,  duration: 0.12, ease: 'power2.out' }, 0.80);
+        phonePinTl.to('#app-bottom', { opacity: 1, y: 0,  duration: 0.12, ease: 'power2.out' }, 0.84);
+        phonePinTl.to('#app-btn',    { opacity: 1,         duration: 0.10, ease: 'power2.out' }, 0.88);
+        phonePinTl.to('#ali-badge-1',{ opacity: 1, scale: 1, duration: 0.12, ease: 'back.out(2)' }, 0.93);
+      }
+    } catch(e) { /* phone pin failed silently */ }
+
+    // ---- CTA (bidirezionale) ----
+    try {
+      gsap.set('#cta-inner', { opacity: 0, y: 30 });
+      ScrollTrigger.create({
+        trigger: '#cta-inner',
+        start: 'top 80%',
+        end: 'top 15%',
+        onEnter:     function() { gsap.to('#cta-inner', { opacity: 1, y: 0,  duration: 0.8, ease: 'power2.out' }); },
+        onLeaveBack: function() { gsap.to('#cta-inner', { opacity: 0, y: 30, duration: 0.5, ease: 'power2.in' }); },
+      });
+      revealStepLabel('step-05', '#cta-inner');
+    } catch(e) {}
+
+  } // end !prefersReduced
+
+  // ---- SCROLL TRIGGER REFRESH (dopo setup) ----
+  try { ScrollTrigger.refresh(); } catch(e) {}
+
+})();
+</script>
+
+</BaseLayout>

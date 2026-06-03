@@ -1,0 +1,17 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# adapters / hosting
+.vercel/
+
+# logs
+*.log
+npm-debug.log*
+
+# os / editors
+.DS_Store
+.vscode/
