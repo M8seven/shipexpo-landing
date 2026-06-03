@@ -1389,7 +1389,7 @@ footer {
 
 .footer-links a:hover { color: var(--text); }
 
-/* ---- RESPONSIVE ---- */
+/* ---- RESPONSIVE — tablet/small desktop ---- */
 @media (max-width: 900px) {
   html { cursor: auto; }
   #cursor, #cursor-ring { display: none; }
@@ -1437,5 +1437,260 @@ footer {
   #phone-section {
     grid-template-columns: 1fr;
     gap: 48px;
+  }
+}
+
+/* ---- RESPONSIVE — smartphone (<=640px) ---- */
+@media (max-width: 640px) {
+
+  /* Nav: padding ridotto, nessun overflow */
+  nav {
+    padding: 14px 18px;
+  }
+
+  /* Hero: colonna singola, padding ridotto */
+  #hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 88px 18px 56px;
+    min-height: unset;
+  }
+
+  .hero-left {
+    gap: 20px;
+  }
+
+  /* Titolo hero: scala sicura per schermo stretto */
+  .hero-h1 {
+    font-size: clamp(32px, 9vw, 48px);
+    letter-spacing: -0.025em;
+  }
+
+  .hero-badge {
+    font-size: 10px;
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    max-width: 100%;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 20px;
+    font-size: 13px;
+  }
+
+  /* Terminale: larghezza piena, font piu piccolo per leggibilita */
+  .hero-right {
+    justify-content: stretch;
+  }
+
+  .terminal-window {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .terminal-body {
+    font-size: 11px;
+    padding: 14px 14px 18px;
+    min-height: 220px;
+    overflow-x: auto;
+  }
+
+  .terminal-title {
+    font-size: 10px;
+  }
+
+  /* Sezioni: padding laterale 18px, verticale ridotto */
+  #code-section,
+  #what-you-get,
+  #phone-section,
+  #cta {
+    padding: 56px 18px;
+  }
+
+  #stats-strip {
+    padding: 40px 18px;
+  }
+
+  .stats-inner {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+
+  .stat-number {
+    font-size: 36px;
+  }
+
+  .section-divider {
+    padding: 0 18px;
+  }
+
+  /* Divider label: evita overflow su schermi molto stretti */
+  .section-divider-label {
+    font-size: 10px;
+  }
+
+  /* Code section */
+  .code-header h2 {
+    font-size: clamp(24px, 7vw, 36px);
+  }
+
+  pre {
+    font-size: 11px;
+    padding: 16px 14px;
+  }
+
+  .code-tab {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+
+  /* What you get: gia 1 colonna a 900px, aggiusta padding card */
+  .wyg-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wyg-item {
+    padding: 24px 20px;
+  }
+
+  .wyg-header h2 {
+    font-size: clamp(26px, 7vw, 40px);
+  }
+
+  /* Phone section: colonna singola, mockup ridimensionato */
+  #phone-section {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 56px 18px;
+  }
+
+  .phone-copy h2 {
+    font-size: clamp(24px, 7vw, 36px);
+  }
+
+  .phone-copy p {
+    font-size: 14px;
+    max-width: 100%;
+  }
+
+  /* Mockup piu piccolo: occupa meno altezza su mobile */
+  .phone-frame-wrap {
+    padding: 0 40px;
+  }
+
+  .phone-frame {
+    width: 200px;
+    height: 400px;
+    border-radius: 28px;
+  }
+
+  /* CTA */
+  .cta-h2 {
+    font-size: clamp(28px, 8vw, 44px);
+  }
+
+  .cta-sub {
+    font-size: 14px;
+  }
+
+  .cta-pricing-block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 20px;
+    width: 100%;
+  }
+
+  .cta-price-divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .cta-price-num {
+    font-size: 40px;
+  }
+
+  .btn-cta-main {
+    width: 100%;
+    justify-content: center;
+    font-size: 12px;
+    padding: 14px 20px;
+    overflow-wrap: anywhere;
+  }
+
+  /* Footer: colonna singola centrata */
+  footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 28px 18px;
+    text-align: center;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+}
+
+/* ---- RESPONSIVE — telefoni molto stretti (<=430px) ---- */
+@media (max-width: 430px) {
+
+  .hero-h1 {
+    font-size: clamp(28px, 10vw, 40px);
+  }
+
+  .hero-sub {
+    font-size: 13px;
+  }
+
+  .terminal-body {
+    font-size: 10px;
+    min-height: 190px;
+  }
+
+  /* Su larghezze <430px la riga "normally ~N days" nel terminale
+     puo sforare: tronca con ellipsis invece di spingere il layout */
+  .term-output {
+    overflow: hidden;
+  }
+
+  .stats-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .stat-number {
+    font-size: 30px;
+  }
+
+  .phone-frame-wrap {
+    padding: 0 24px;
+  }
+
+  .phone-frame {
+    width: 180px;
+    height: 360px;
+  }
+
+  .code-tab {
+    font-size: 10px;
+    padding: 9px 9px;
+  }
+
+  .btn-cta-main {
+    font-size: 11px;
+    letter-spacing: 0;
   }
 }

@@ -479,6 +479,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   // ---- GSAP REGISTER ----
   gsap.registerPlugin(ScrollTrigger);
 
+  // ---- TOUCH / MOBILE DETECTION ----
+  // Su dispositivi touch i PIN+scrub sono fastidiosi e rischiano sezioni vuote.
+  // isTouch = true  -> reveal semplici (fade/translate, once)
+  // isTouch = false -> comportamento desktop invariato (pin+scrub)
+  var isTouch = (
+    window.matchMedia('(pointer: coarse)').matches ||
+    window.innerWidth < 768
+  );
+
   // ---- NAV scroll state ----
   var nav = document.getElementById('main-nav');
   window.addEventListener('scroll', function() {
@@ -822,7 +831,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   // ---- MOSSA 4b: MAGNETIC BUTTONS ----
   try {
     var magnetBtns = document.querySelectorAll('[data-magnetic]');
-    if (true) { // TODO pre-launch: ripristinare window.matchMedia prefers-reduced-motion
+    if (!isTouch) { // disattivato su touch/mobile, attivo su desktop fine-pointer
       magnetBtns.forEach(function(btn) {
         var bx = 0, by = 0;
         var tbx = 0, tby = 0;
@@ -997,39 +1006,148 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       revealStepLabel('step-03', '#wyg-header');
     } catch(e) {}
 
-    // ---- WYG GRID — PIN + accumulo card una a una ----
-    // Le 6 card entrano in sequenza mentre scrolli (la scena resta ferma ~1 viewport).
-    // Tornando su, si eliminano in ordine inverso.
+    // ---- WYG GRID — PIN + accumulo card una a una (desktop) / reveal semplice (touch) ----
     try {
       var wygItems = Array.from(document.querySelectorAll('.wyg-item'));
-      gsap.set(wygItems, { opacity: 0, y: 24 });
-
       var wygSection = document.getElementById('what-you-get');
-      if (wygSection) {
-        // Pin per tutta la durata delle 6 card + un po' di respiro
-        var wygPinTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: wygSection,
-            start: 'top top',
-            end: '+=' + (wygItems.length * 120 + 80) + 'px',
-            pin: true,
-            scrub: 1,
-            anticipatePin: 1,
+
+      if (isTouch) {
+        // Touch/mobile: assicura visibilita immediata + fade semplice una volta
+        gsap.set(wygItems, { opacity: 0, y: 16 });
+        wygItems.forEach(function(item, i) {
+          ScrollTrigger.create({
+            trigger: item,
+            start: 'top 90%',
+            once: true,
+            onEnter: function() {
+              gsap.to(item, { opacity: 1, y: 0, duration: 0.5, delay: i * 0.08, ease: 'power2.out' });
+            },
+          });
+        });
+      } else {
+        // Desktop: pin + scrub originale invariato
+        gsap.set(wygItems, { opacity: 0, y: 24 });
+        if (wygSection) {
+          var wygPinTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: wygSection,
+              start: 'top top',
+              end: '+=' + (wygItems.length * 120 + 80) + 'px',
+              pin: true,
+              scrub: 1,
+              anticipatePin: 1,
+            }
+          });
+          wygItems.forEach(function(item, i) {
+            wygPinTl.to(item, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, i * 0.55);
+          });
+        }
+      }
+    } catch(e) {
+      // Fallback estremo: rendi tutto visibile
+      try {
+        document.querySelectorAll('.wyg-item').forEach(function(el) {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+      } catch(e2) {}
+    }
+
+    // ---- PHONE SECTION — PIN + scrub (desktop) / reveal semplice (touch) ----
+    try {
+      var phoneSection = document.getElementById('phone-section');
+      var phoneOverlay = document.getElementById('phone-overlay');
+      var phoneFrame   = document.getElementById('phone-frame');
+
+      if (isTouch) {
+        // Touch/mobile: forza tutto visibile con reveal progressivo once.
+        // Nessun pin, nessuno scrub. La phone-screen-overlay viene rimossa subito.
+        if (phoneOverlay) {
+          phoneOverlay.classList.remove('on');
+          phoneOverlay.classList.remove('off');
+          gsap.set(phoneOverlay, { opacity: 0 });
+        }
+        if (phoneFrame) phoneFrame.classList.add('lit');
+
+        var touchPhoneEls = [
+          { sel: '#phone-copy',      props: { opacity: 1, x: 0,     duration: 0.6, ease: 'power2.out' }, from: { opacity: 0, x: -20 } },
+          { sel: '#phone-frame-wrap',props: { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'expo.out' }, from: { opacity: 0, y: 30, scale: 0.93 } },
+        ];
+        touchPhoneEls.forEach(function(cfg) {
+          try {
+            gsap.set(cfg.sel, cfg.from);
+            ScrollTrigger.create({
+              trigger: cfg.sel,
+              start: 'top 92%',
+              once: true,
+              onEnter: function() { gsap.to(cfg.sel, cfg.props); },
+            });
+          } catch(e) {
+            try {
+              var el = document.querySelector(cfg.sel);
+              if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
+            } catch(e2) {}
           }
         });
 
-        wygItems.forEach(function(item, i) {
-          wygPinTl.to(item, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, i * 0.55);
+        // Build steps: stagger leggero, ciascuno con il proprio trigger
+        var bstepIds = ['#bstep-1','#bstep-2','#bstep-3','#bstep-4'];
+        bstepIds.forEach(function(sel, i) {
+          try {
+            gsap.set(sel, { opacity: 0, x: -10 });
+            ScrollTrigger.create({
+              trigger: sel,
+              start: 'top 92%',
+              once: true,
+              onEnter: function() {
+                gsap.to(sel, { opacity: 1, x: 0, duration: 0.45, delay: i * 0.1, ease: 'power2.out' });
+              },
+            });
+          } catch(e) {
+            try {
+              var el = document.querySelector(sel);
+              if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
+            } catch(e2) {}
+          }
         });
-      }
-    } catch(e) {}
 
-    // ---- PHONE SECTION — PIN + scrub materializzazione ----
-    // Il telefono si "costruisce" fluido mentre scrolli verso di esso.
-    // Tornando su si smonta.
-    try {
-      var phoneSection = document.getElementById('phone-section');
-      if (phoneSection) {
+        // Elementi interni al mockup: appaiono tutti insieme con il frame
+        var appInnerIds = ['#app-header','#ali-1','#ali-2','#ali-3','#ali-4','#app-bottom','#app-btn','#ali-badge-1'];
+        appInnerIds.forEach(function(sel) {
+          try {
+            gsap.set(sel, { opacity: 0, x: 0, y: 0, scale: 1 });
+            ScrollTrigger.create({
+              trigger: '#phone-frame-wrap',
+              start: 'top 88%',
+              once: true,
+              onEnter: function() {
+                gsap.to(sel, { opacity: 1, duration: 0.5, ease: 'power2.out' });
+              },
+            });
+          } catch(e) {
+            try {
+              var el = document.querySelector(sel);
+              if (el) el.style.opacity = '1';
+            } catch(e2) {}
+          }
+        });
+
+        // step-04 label — reveal semplice
+        try {
+          var s04 = document.getElementById('step-04');
+          if (s04) {
+            gsap.set(s04, { opacity: 0, x: -12 });
+            ScrollTrigger.create({
+              trigger: s04,
+              start: 'top 90%',
+              once: true,
+              onEnter: function() { gsap.to(s04, { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' }); },
+            });
+          }
+        } catch(e) {}
+
+      } else {
+        // Desktop: comportamento originale con PIN + scrub invariato
 
         // Reset stato iniziale
         gsap.set('#phone-copy',      { opacity: 0, x: -24 });
@@ -1040,20 +1158,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         gsap.set('#app-bottom',  { opacity: 0, y: 8 });
         gsap.set('#app-btn',     { opacity: 0 });
         gsap.set('#ali-badge-1', { opacity: 0, scale: 0 });
-        var phoneOverlay = document.getElementById('phone-overlay');
-        var phoneFrame   = document.getElementById('phone-frame');
-        // Rimuovi classi CSS che usano transition (GSAP prende controllo diretto via inline style)
         if (phoneOverlay) {
           phoneOverlay.classList.remove('on');
           phoneOverlay.classList.remove('off');
-          gsap.set(phoneOverlay, { opacity: 1 }); // schermo nero all'inizio
+          gsap.set(phoneOverlay, { opacity: 1 });
         }
         if (phoneFrame) phoneFrame.classList.remove('lit');
 
-        // Label step-04 — bidirezionale come gli altri
         revealStepLabel('step-04', phoneSection);
 
-        // PIN: la sezione resta ferma mentre lo scroll costruisce la scena
         var phonePinTl = gsap.timeline({
           scrollTrigger: {
             trigger: phoneSection,
@@ -1063,7 +1176,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             scrub: 1.2,
             anticipatePin: 1,
             onUpdate: function(self) {
-              // Sincronizza la classe .lit del frame con lo scrub (>50% = acceso)
               if (phoneFrame) {
                 if (self.progress > 0.50) phoneFrame.classList.add('lit');
                 else phoneFrame.classList.remove('lit');
@@ -1072,24 +1184,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           }
         });
 
-        // 0-0.30: phone copy entra da sinistra
         phonePinTl.to('#phone-copy', { opacity: 1, x: 0, duration: 0.3, ease: 'power2.out' }, 0);
-
-        // 0.05-0.35: build steps accumulano uno a uno
         phonePinTl.to('#bstep-1', { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.05);
         phonePinTl.to('#bstep-2', { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.15);
         phonePinTl.to('#bstep-3', { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.25);
         phonePinTl.to('#bstep-4', { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.35);
-
-        // 0.30-0.52: telefono si materializza (sale + scale)
         phonePinTl.to('#phone-frame-wrap', { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'expo.out' }, 0.30);
-
-        // 0.50-0.58: schermo si accende (overlay fade out, controllato via scrub)
         if (phoneOverlay) {
           phonePinTl.to(phoneOverlay, { opacity: 0, duration: 0.18, ease: 'none' }, 0.50);
         }
-
-        // 0.55-0.93: elementi app entrano in stagger (accumulo)
         phonePinTl.to('#app-header', { opacity: 1, y: 0,  duration: 0.12, ease: 'power2.out' }, 0.55);
         phonePinTl.to('#ali-1',      { opacity: 1, x: 0,  duration: 0.12, ease: 'power2.out' }, 0.62);
         phonePinTl.to('#ali-2',      { opacity: 1, x: 0,  duration: 0.12, ease: 'power2.out' }, 0.68);
@@ -1099,7 +1202,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         phonePinTl.to('#app-btn',    { opacity: 1,         duration: 0.10, ease: 'power2.out' }, 0.88);
         phonePinTl.to('#ali-badge-1',{ opacity: 1, scale: 1, duration: 0.12, ease: 'back.out(2)' }, 0.93);
       }
-    } catch(e) { /* phone pin failed silently */ }
+    } catch(e) {
+      // Fallback estremo: rendi tutta la sezione phone visibile
+      try {
+        var fallbackIds = ['#phone-copy','#phone-frame-wrap','#bstep-1','#bstep-2','#bstep-3','#bstep-4',
+          '#app-header','#ali-1','#ali-2','#ali-3','#ali-4','#app-bottom','#app-btn','#ali-badge-1'];
+        fallbackIds.forEach(function(sel) {
+          var el = document.querySelector(sel);
+          if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
+        });
+        var ov = document.getElementById('phone-overlay');
+        if (ov) ov.style.opacity = '0';
+        var fr = document.getElementById('phone-frame');
+        if (fr) fr.classList.add('lit');
+      } catch(e2) {}
+    }
 
     // ---- CTA (bidirezionale) ----
     try {
@@ -1118,6 +1235,22 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   // ---- SCROLL TRIGGER REFRESH (dopo setup) ----
   try { ScrollTrigger.refresh(); } catch(e) {}
+
+  // ---- SAFETY NET: niente deve mai restare invisibile ----
+  // Se un reveal/ScrollTrigger non si spara (es. su mobile, elemento gia in viewport),
+  // dopo 2.5s forziamo visibili gli elementi che dovevano apparire. Evita sezioni vuote.
+  try {
+    setTimeout(function () {
+      document.querySelectorAll(
+        '#phone-copy, #phone-frame-wrap, [id^="bstep-"], #app-header, [id^="ali-"], #app-bottom, #app-btn, #ali-badge-1, .wyg-item, #cta-inner, #wyg-header'
+      ).forEach(function (el) {
+        if (parseFloat(getComputedStyle(el).opacity) < 0.05) {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        }
+      });
+    }, 2500);
+  } catch (e) {}
 
 })();
 </script>
