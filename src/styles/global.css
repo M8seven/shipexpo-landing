@@ -23,6 +23,8 @@ html {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%; /* stop iOS/Android font-boosting che ridimensiona gli item allo scroll */
+  text-size-adjust: 100%;
   cursor: none;
 }
 
@@ -321,7 +323,7 @@ nav.scrolled {
   transition: box-shadow 0.25s;
   position: relative;
   overflow: hidden;
-  will-change: transform;
+  will-change: auto;
 }
 
 .btn-primary::before {
@@ -1028,7 +1030,7 @@ pre {
   align-items: center;
   opacity: 0;
   transform: translateY(40px) scale(0.92);
-  will-change: transform, opacity;
+  will-change: auto;
 }
 
 .phone-frame {
@@ -1341,7 +1343,7 @@ pre {
   letter-spacing: -0.01em;
   transition: box-shadow 0.25s;
   position: relative;
-  will-change: transform;
+  will-change: auto;
 }
 
 .btn-cta-main:hover {
