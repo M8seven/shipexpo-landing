@@ -460,7 +460,8 @@ nav.scrolled {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   line-height: 1.7;
-  min-height: 280px;
+  height: 310px; /* fissa: contiene tutte le righe, niente salto al restart del loop */
+  overflow: hidden;
 }
 
 .terminal-line {
@@ -1516,8 +1517,8 @@ footer {
   .terminal-body {
     font-size: 11px;
     padding: 14px 14px 18px;
-    min-height: 220px;
-    overflow-x: auto;
+    height: 250px;
+    overflow: hidden;
   }
 
   .terminal-title {
@@ -1672,7 +1673,7 @@ footer {
 
   .terminal-body {
     font-size: 10px;
-    min-height: 190px;
+    height: 230px;
   }
 
   /* Su larghezze <430px la riga "normally ~N days" nel terminale
