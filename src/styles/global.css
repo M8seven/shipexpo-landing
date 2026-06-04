@@ -1479,7 +1479,7 @@ footer {
 
   /* Titolo hero: scala sicura per schermo stretto */
   .hero-h1 {
-    font-size: clamp(32px, 9vw, 48px);
+    font-size: 48px;
     letter-spacing: -0.025em;
   }
 
@@ -1558,7 +1558,7 @@ footer {
 
   /* Code section */
   .code-header h2 {
-    font-size: clamp(24px, 7vw, 36px);
+    font-size: 36px;
   }
 
   pre {
@@ -1581,7 +1581,7 @@ footer {
   }
 
   .wyg-header h2 {
-    font-size: clamp(26px, 7vw, 40px);
+    font-size: 40px;
   }
 
   /* Phone section: colonna singola, mockup ridimensionato */
@@ -1592,7 +1592,7 @@ footer {
   }
 
   .phone-copy h2 {
-    font-size: clamp(24px, 7vw, 36px);
+    font-size: 36px;
   }
 
   .phone-copy p {
@@ -1613,7 +1613,7 @@ footer {
 
   /* CTA */
   .cta-h2 {
-    font-size: clamp(28px, 8vw, 44px);
+    font-size: 44px;
   }
 
   .cta-sub {
@@ -1665,7 +1665,7 @@ footer {
 @media (max-width: 430px) {
 
   .hero-h1 {
-    font-size: clamp(28px, 10vw, 40px);
+    font-size: 40px;
   }
 
   .hero-sub {
