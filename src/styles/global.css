@@ -1389,6 +1389,21 @@ footer {
 
 .footer-links a:hover { color: var(--text); }
 
+/* ---- MOBILE REVEAL (IntersectionObserver, touch-only via JS class add) ----
+   .m-reveal is added exclusively via JS when isTouch=true.
+   On desktop no element ever gets this class, so these rules are inert there. */
+.m-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.m-reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
 /* ---- RESPONSIVE — tablet/small desktop ---- */
 @media (max-width: 900px) {
   html { cursor: auto; }

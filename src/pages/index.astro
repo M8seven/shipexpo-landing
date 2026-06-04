@@ -925,86 +925,190 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   } else {
 
-    // ---- STEP LABEL REVEAL HELPER (bidirezionale) ----
+    // ---- STEP LABEL REVEAL HELPER ----
+    // Desktop (bidirezionale con ScrollTrigger) / Touch (IntersectionObserver once)
     function revealStepLabel(id, trigger) {
       try {
         var el = document.getElementById(id);
         if (!el) return;
-        gsap.set(el, { opacity: 0, x: -12 });
-        ScrollTrigger.create({
-          trigger: trigger || el,
-          start: 'top 82%',
-          end: 'top 20%',
-          onEnter:     function() { gsap.to(el, { opacity: 1, x: 0,   duration: 0.5, ease: 'power2.out' }); },
-          onLeaveBack: function() { gsap.to(el, { opacity: 0, x: -12, duration: 0.35, ease: 'power2.in' }); },
-        });
+        if (isTouch) {
+          // step labels: m-reveal con traslazione X
+          el.classList.add('m-reveal');
+          el.style.transform = 'translateX(-12px)';
+          var slObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                slObs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+          slObs.observe(el);
+        } else {
+          gsap.set(el, { opacity: 0, x: -12 });
+          ScrollTrigger.create({
+            trigger: trigger || el,
+            start: 'top 82%',
+            end: 'top 20%',
+            onEnter:     function() { gsap.to(el, { opacity: 1, x: 0,   duration: 0.5, ease: 'power2.out' }); },
+            onLeaveBack: function() { gsap.to(el, { opacity: 0, x: -12, duration: 0.35, ease: 'power2.in' }); },
+          });
+        }
       } catch(e) {}
     }
 
-    // ---- CODE SECTION HEADER (bidirezionale) ----
-    try {
-      gsap.set('#code-header', { opacity: 0, y: 30 });
-      ScrollTrigger.create({
-        trigger: '#code-header',
-        start: 'top 80%',
-        end: 'top 15%',
-        onEnter:     function() { gsap.to('#code-header', { opacity: 1, y: 0,  duration: 0.7, ease: 'power2.out' }); },
-        onLeaveBack: function() { gsap.to('#code-header', { opacity: 0, y: 30, duration: 0.45, ease: 'power2.in' }); },
-      });
-      revealStepLabel('step-02', '#code-header');
-    } catch(e) {}
+    // ---- CODE SECTION HEADER ----
+    if (isTouch) {
+      // Touch: IntersectionObserver once
+      try {
+        var codeHeaderEl = document.getElementById('code-header');
+        if (codeHeaderEl) {
+          codeHeaderEl.classList.add('m-reveal');
+          var chObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                chObs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+          chObs.observe(codeHeaderEl);
+        }
+        revealStepLabel('step-02', '#code-header');
+      } catch(e) {}
 
-    // ---- CODE TABS + PANELS (bidirezionale) ----
-    try {
-      gsap.set(['#code-tabs', '#code-panels'], { opacity: 0, y: 20 });
-      var beamFired = false;
-      ScrollTrigger.create({
-        trigger: '#code-tabs',
-        start: 'top 82%',
-        end: 'top 10%',
-        onEnter: function() {
-          gsap.to(['#code-tabs', '#code-panels'], {
-            opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: 'power2.out',
-            onComplete: function() {
-              if (!beamFired && beamBlock) {
+      // Code tabs + panels
+      try {
+        var codeTabsEl  = document.getElementById('code-tabs');
+        var codePanelsEl = document.getElementById('code-panels');
+        var beamFired = false;
+        [codeTabsEl, codePanelsEl].forEach(function(el, i) {
+          if (!el) return;
+          el.classList.add('m-reveal');
+          if (i > 0) el.style.transitionDelay = '120ms';
+        });
+        var ctObs = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+              if (!beamFired && entry.target === codeTabsEl && beamBlock) {
                 beamFired = true;
                 beamBlock.classList.add('beam-active');
                 setTimeout(function() { beamBlock.classList.remove('beam-active'); }, 3000);
               }
+              ctObs.unobserve(entry.target);
             }
           });
-        },
-        onLeaveBack: function() {
-          gsap.to(['#code-panels', '#code-tabs'], { opacity: 0, y: 20, duration: 0.4, stagger: 0.08, ease: 'power2.in' });
-        },
-      });
-    } catch(e) {}
+        }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+        if (codeTabsEl)  ctObs.observe(codeTabsEl);
+        if (codePanelsEl) ctObs.observe(codePanelsEl);
+      } catch(e) {}
 
-    // ---- STATS STRIP — accumulo bidirezionale con stagger ----
-    try {
-      var statItems = document.querySelectorAll('.stat-item');
-      gsap.set(statItems, { opacity: 0, y: 20 });
-      ScrollTrigger.create({
-        trigger: '#stats-strip',
-        start: 'top 80%',
-        end: 'top 10%',
-        onEnter:     function() { gsap.to(statItems, { opacity: 1, y: 0,  duration: 0.55, stagger: 0.1,  ease: 'power2.out' }); },
-        onLeaveBack: function() { gsap.to(Array.from(statItems).reverse(), { opacity: 0, y: 20, duration: 0.35, stagger: 0.07, ease: 'power2.in' }); },
-      });
-    } catch(e) {}
+      // Stats strip
+      try {
+        var statItems = document.querySelectorAll('.stat-item');
+        statItems.forEach(function(el, i) {
+          el.classList.add('m-reveal');
+          if (i > 0) el.style.transitionDelay = (i * 80) + 'ms';
+        });
+        var statObs = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+              statObs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+        statItems.forEach(function(el) { statObs.observe(el); });
+      } catch(e) {}
 
-    // ---- WYG HEADER (bidirezionale) ----
-    try {
-      gsap.set('#wyg-header', { opacity: 0, y: 30 });
-      ScrollTrigger.create({
-        trigger: '#wyg-header',
-        start: 'top 80%',
-        end: 'top 15%',
-        onEnter:     function() { gsap.to('#wyg-header', { opacity: 1, y: 0,  duration: 0.7,  ease: 'power2.out' }); },
-        onLeaveBack: function() { gsap.to('#wyg-header', { opacity: 0, y: 30, duration: 0.45, ease: 'power2.in' }); },
-      });
-      revealStepLabel('step-03', '#wyg-header');
-    } catch(e) {}
+      // WYG header
+      try {
+        var wygHeaderEl = document.getElementById('wyg-header');
+        if (wygHeaderEl) {
+          wygHeaderEl.classList.add('m-reveal');
+          var whObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                whObs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+          whObs.observe(wygHeaderEl);
+        }
+        revealStepLabel('step-03', '#wyg-header');
+      } catch(e) {}
+
+    } else {
+      // Desktop (bidirezionale con ScrollTrigger) — INVARIATO
+
+      // ---- CODE SECTION HEADER (bidirezionale) ----
+      try {
+        gsap.set('#code-header', { opacity: 0, y: 30 });
+        ScrollTrigger.create({
+          trigger: '#code-header',
+          start: 'top 80%',
+          end: 'top 15%',
+          onEnter:     function() { gsap.to('#code-header', { opacity: 1, y: 0,  duration: 0.7, ease: 'power2.out' }); },
+          onLeaveBack: function() { gsap.to('#code-header', { opacity: 0, y: 30, duration: 0.45, ease: 'power2.in' }); },
+        });
+        revealStepLabel('step-02', '#code-header');
+      } catch(e) {}
+
+      // ---- CODE TABS + PANELS (bidirezionale) ----
+      try {
+        gsap.set(['#code-tabs', '#code-panels'], { opacity: 0, y: 20 });
+        var beamFired = false;
+        ScrollTrigger.create({
+          trigger: '#code-tabs',
+          start: 'top 82%',
+          end: 'top 10%',
+          onEnter: function() {
+            gsap.to(['#code-tabs', '#code-panels'], {
+              opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: 'power2.out',
+              onComplete: function() {
+                if (!beamFired && beamBlock) {
+                  beamFired = true;
+                  beamBlock.classList.add('beam-active');
+                  setTimeout(function() { beamBlock.classList.remove('beam-active'); }, 3000);
+                }
+              }
+            });
+          },
+          onLeaveBack: function() {
+            gsap.to(['#code-panels', '#code-tabs'], { opacity: 0, y: 20, duration: 0.4, stagger: 0.08, ease: 'power2.in' });
+          },
+        });
+      } catch(e) {}
+
+      // ---- STATS STRIP — accumulo bidirezionale con stagger ----
+      try {
+        var statItems = document.querySelectorAll('.stat-item');
+        gsap.set(statItems, { opacity: 0, y: 20 });
+        ScrollTrigger.create({
+          trigger: '#stats-strip',
+          start: 'top 80%',
+          end: 'top 10%',
+          onEnter:     function() { gsap.to(statItems, { opacity: 1, y: 0,  duration: 0.55, stagger: 0.1,  ease: 'power2.out' }); },
+          onLeaveBack: function() { gsap.to(Array.from(statItems).reverse(), { opacity: 0, y: 20, duration: 0.35, stagger: 0.07, ease: 'power2.in' }); },
+        });
+      } catch(e) {}
+
+      // ---- WYG HEADER (bidirezionale) ----
+      try {
+        gsap.set('#wyg-header', { opacity: 0, y: 30 });
+        ScrollTrigger.create({
+          trigger: '#wyg-header',
+          start: 'top 80%',
+          end: 'top 15%',
+          onEnter:     function() { gsap.to('#wyg-header', { opacity: 1, y: 0,  duration: 0.7,  ease: 'power2.out' }); },
+          onLeaveBack: function() { gsap.to('#wyg-header', { opacity: 0, y: 30, duration: 0.45, ease: 'power2.in' }); },
+        });
+        revealStepLabel('step-03', '#wyg-header');
+      } catch(e) {}
+
+    } // end isTouch/desktop split for shared sections
 
     // ---- WYG GRID — PIN + accumulo card una a una (desktop) / reveal semplice (touch) ----
     try {
@@ -1012,18 +1116,24 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       var wygSection = document.getElementById('what-you-get');
 
       if (isTouch) {
-        // Touch/mobile: assicura visibilita immediata + fade semplice una volta
-        gsap.set(wygItems, { opacity: 0, y: 16 });
-        wygItems.forEach(function(item, i) {
-          ScrollTrigger.create({
-            trigger: item,
-            start: 'top 90%',
-            once: true,
-            onEnter: function() {
-              gsap.to(item, { opacity: 1, y: 0, duration: 0.5, delay: i * 0.08, ease: 'power2.out' });
-            },
+        // Touch/mobile: IntersectionObserver — no ScrollTrigger (Lenis non emette eventi su touch)
+        try {
+          wygItems.forEach(function(item, i) {
+            item.classList.add('m-reveal');
+            if (i > 0) item.style.transitionDelay = (i * 60) + 'ms';
           });
-        });
+          var wygObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                wygObs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+          wygItems.forEach(function(item) { wygObs.observe(item); });
+        } catch(e) {
+          wygItems.forEach(function(el) { el.style.opacity = '1'; el.style.transform = 'none'; });
+        }
       } else {
         // Desktop: pin + scrub originale invariato
         gsap.set(wygItems, { opacity: 0, y: 24 });
@@ -1060,91 +1170,106 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       var phoneFrame   = document.getElementById('phone-frame');
 
       if (isTouch) {
-        // Touch/mobile: forza tutto visibile con reveal progressivo once.
-        // Nessun pin, nessuno scrub. La phone-screen-overlay viene rimossa subito.
-        if (phoneOverlay) {
-          phoneOverlay.classList.remove('on');
-          phoneOverlay.classList.remove('off');
-          gsap.set(phoneOverlay, { opacity: 0 });
-        }
-        if (phoneFrame) phoneFrame.classList.add('lit');
+        // Touch/mobile: IntersectionObserver per tutti gli elementi phone.
+        // phoneOverlay e phone-frame: gestiti via observer sul frame-wrap (no ScrollTrigger).
 
-        var touchPhoneEls = [
-          { sel: '#phone-copy',      props: { opacity: 1, x: 0,     duration: 0.6, ease: 'power2.out' }, from: { opacity: 0, x: -20 } },
-          { sel: '#phone-frame-wrap',props: { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'expo.out' }, from: { opacity: 0, y: 30, scale: 0.93 } },
-        ];
-        touchPhoneEls.forEach(function(cfg) {
-          try {
-            gsap.set(cfg.sel, cfg.from);
-            ScrollTrigger.create({
-              trigger: cfg.sel,
-              start: 'top 92%',
-              once: true,
-              onEnter: function() { gsap.to(cfg.sel, cfg.props); },
-            });
-          } catch(e) {
-            try {
-              var el = document.querySelector(cfg.sel);
-              if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
-            } catch(e2) {}
-          }
-        });
-
-        // Build steps: stagger leggero, ciascuno con il proprio trigger
-        var bstepIds = ['#bstep-1','#bstep-2','#bstep-3','#bstep-4'];
-        bstepIds.forEach(function(sel, i) {
-          try {
-            gsap.set(sel, { opacity: 0, x: -10 });
-            ScrollTrigger.create({
-              trigger: sel,
-              start: 'top 92%',
-              once: true,
-              onEnter: function() {
-                gsap.to(sel, { opacity: 1, x: 0, duration: 0.45, delay: i * 0.1, ease: 'power2.out' });
-              },
-            });
-          } catch(e) {
-            try {
-              var el = document.querySelector(sel);
-              if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
-            } catch(e2) {}
-          }
-        });
-
-        // Elementi interni al mockup: appaiono tutti insieme con il frame
-        var appInnerIds = ['#app-header','#ali-1','#ali-2','#ali-3','#ali-4','#app-bottom','#app-btn','#ali-badge-1'];
-        appInnerIds.forEach(function(sel) {
-          try {
-            gsap.set(sel, { opacity: 0, x: 0, y: 0, scale: 1 });
-            ScrollTrigger.create({
-              trigger: '#phone-frame-wrap',
-              start: 'top 88%',
-              once: true,
-              onEnter: function() {
-                gsap.to(sel, { opacity: 1, duration: 0.5, ease: 'power2.out' });
-              },
-            });
-          } catch(e) {
-            try {
-              var el = document.querySelector(sel);
-              if (el) el.style.opacity = '1';
-            } catch(e2) {}
-          }
-        });
-
-        // step-04 label — reveal semplice
         try {
-          var s04 = document.getElementById('step-04');
-          if (s04) {
-            gsap.set(s04, { opacity: 0, x: -12 });
-            ScrollTrigger.create({
-              trigger: s04,
-              start: 'top 90%',
-              once: true,
-              onEnter: function() { gsap.to(s04, { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' }); },
-            });
+          // Overlay: opacity 0 da subito (non c'e scrub, resta trasparente)
+          if (phoneOverlay) {
+            phoneOverlay.classList.remove('on');
+            phoneOverlay.classList.remove('off');
+            phoneOverlay.style.opacity = '0';
           }
-        } catch(e) {}
+
+          // phone-copy: m-reveal con traslazione X (sovrascriviamo la default Y via style)
+          var phoneCopyEl = document.getElementById('phone-copy');
+          if (phoneCopyEl) {
+            phoneCopyEl.classList.add('m-reveal');
+            phoneCopyEl.style.transform = 'translateX(-22px)';
+          }
+
+          // phone-frame-wrap: m-reveal standard (Y)
+          var phoneFrameWrapEl = document.getElementById('phone-frame-wrap');
+          if (phoneFrameWrapEl) {
+            phoneFrameWrapEl.classList.add('m-reveal');
+          }
+
+          // step-04 label: m-reveal con traslazione X
+          var s04el = document.getElementById('step-04');
+          if (s04el) {
+            s04el.classList.add('m-reveal');
+            s04el.style.transform = 'translateX(-12px)';
+          }
+
+          // build steps: m-reveal con stagger delay
+          var bstepIds = ['bstep-1','bstep-2','bstep-3','bstep-4'];
+          bstepIds.forEach(function(id, i) {
+            var el = document.getElementById(id);
+            if (el) {
+              el.classList.add('m-reveal');
+              el.style.transform = 'translateX(-10px)';
+              el.style.transitionDelay = (i * 60) + 'ms';
+            }
+          });
+
+          // Un solo observer per phone-copy, phone-frame-wrap, step-04, bsteps
+          var phoneTopObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                phoneTopObs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+
+          [phoneCopyEl, phoneFrameWrapEl, s04el].forEach(function(el) {
+            if (el) phoneTopObs.observe(el);
+          });
+          bstepIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) phoneTopObs.observe(el);
+          });
+
+          // Elementi interni al mockup: appaiono quando phone-frame-wrap entra in view.
+          // Non usano m-reveal (hanno gia opacity:0 via CSS) — aggiungiamo in-view via observer dedicato.
+          var appInnerIds = ['app-header','ali-1','ali-2','ali-3','ali-4','app-bottom','app-btn','ali-badge-1'];
+          appInnerIds.forEach(function(id, i) {
+            var el = document.getElementById(id);
+            if (el) {
+              el.style.opacity = '0';
+              el.style.transition = 'opacity 0.5s ease';
+              el.style.transitionDelay = (i * 55) + 'ms';
+            }
+          });
+
+          var appInnerObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                // Reveal tutti gli elementi interni quando il frame entra
+                appInnerIds.forEach(function(id) {
+                  var el = document.getElementById(id);
+                  if (el) el.style.opacity = '1';
+                });
+                if (phoneFrame) phoneFrame.classList.add('lit');
+                appInnerObs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+
+          if (phoneFrameWrapEl) appInnerObs.observe(phoneFrameWrapEl);
+
+        } catch(e) {
+          // Fallback: rendi tutto visibile
+          try {
+            ['phone-copy','phone-frame-wrap','bstep-1','bstep-2','bstep-3','bstep-4',
+             'app-header','ali-1','ali-2','ali-3','ali-4','app-bottom','app-btn','ali-badge-1'].forEach(function(id) {
+              var el = document.getElementById(id);
+              if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
+            });
+            if (phoneOverlay) phoneOverlay.style.opacity = '0';
+            if (phoneFrame) phoneFrame.classList.add('lit');
+          } catch(e2) {}
+        }
 
       } else {
         // Desktop: comportamento originale con PIN + scrub invariato
@@ -1218,18 +1343,39 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       } catch(e2) {}
     }
 
-    // ---- CTA (bidirezionale) ----
-    try {
-      gsap.set('#cta-inner', { opacity: 0, y: 30 });
-      ScrollTrigger.create({
-        trigger: '#cta-inner',
-        start: 'top 80%',
-        end: 'top 15%',
-        onEnter:     function() { gsap.to('#cta-inner', { opacity: 1, y: 0,  duration: 0.8, ease: 'power2.out' }); },
-        onLeaveBack: function() { gsap.to('#cta-inner', { opacity: 0, y: 30, duration: 0.5, ease: 'power2.in' }); },
-      });
-      revealStepLabel('step-05', '#cta-inner');
-    } catch(e) {}
+    // ---- CTA ----
+    if (isTouch) {
+      // Touch: IntersectionObserver once
+      try {
+        var ctaInnerEl = document.getElementById('cta-inner');
+        if (ctaInnerEl) {
+          ctaInnerEl.classList.add('m-reveal');
+          var ctaObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                ctaObs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+          ctaObs.observe(ctaInnerEl);
+        }
+        revealStepLabel('step-05', '#cta-inner');
+      } catch(e) {}
+    } else {
+      // Desktop: bidirezionale — INVARIATO
+      try {
+        gsap.set('#cta-inner', { opacity: 0, y: 30 });
+        ScrollTrigger.create({
+          trigger: '#cta-inner',
+          start: 'top 80%',
+          end: 'top 15%',
+          onEnter:     function() { gsap.to('#cta-inner', { opacity: 1, y: 0,  duration: 0.8, ease: 'power2.out' }); },
+          onLeaveBack: function() { gsap.to('#cta-inner', { opacity: 0, y: 30, duration: 0.5, ease: 'power2.in' }); },
+        });
+        revealStepLabel('step-05', '#cta-inner');
+      } catch(e) {}
+    }
 
   } // end !prefersReduced
 
@@ -1237,12 +1383,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   try { ScrollTrigger.refresh(); } catch(e) {}
 
   // ---- SAFETY NET: niente deve mai restare invisibile ----
-  // Se un reveal/ScrollTrigger non si spara (es. su mobile, elemento gia in viewport),
-  // dopo 2.5s forziamo visibili gli elementi che dovevano apparire. Evita sezioni vuote.
+  // Se un reveal/IntersectionObserver/ScrollTrigger non si spara, dopo 2.5s forziamo
+  // visibili tutti gli elementi che dovevano apparire. Copre sia m-reveal (touch) che GSAP (desktop).
   try {
     setTimeout(function () {
       document.querySelectorAll(
-        '#phone-copy, #phone-frame-wrap, [id^="bstep-"], #app-header, [id^="ali-"], #app-bottom, #app-btn, #ali-badge-1, .wyg-item, #cta-inner, #wyg-header'
+        '#phone-copy, #phone-frame-wrap, [id^="bstep-"], #app-header, [id^="ali-"], ' +
+        '#app-bottom, #app-btn, #ali-badge-1, .wyg-item, #cta-inner, #wyg-header, ' +
+        '#code-header, #code-tabs, #code-panels, .stat-item, .m-reveal, ' +
+        '[id^="step-"]'
       ).forEach(function (el) {
         if (parseFloat(getComputedStyle(el).opacity) < 0.05) {
           el.style.opacity = '1';
