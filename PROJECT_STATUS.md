@@ -20,7 +20,7 @@ il **sito** (landing, questo repo) e il **prodotto** (boilerplate, repo separato
 
 ## SITO (landing) — questo repo
 
-- Path: `~/Hub/dev/web_site/shipexpo/`
+- Path: `~/Hub/dev/shipexpo/landing-site/` (spostata qui dal contenitore web_site il 2026-07-13; resta repo a se')
 - Repo: `github.com/M8seven/shipexpo-landing` (PUBLIC — e' solo la landing, NON il prodotto)
 - Live: https://m8seven.github.io/shipexpo-landing/
 - Stack: Astro static + CSS scritto a mano (NO Tailwind) + GSAP/ScrollTrigger + Lenis (3 CDN `is:inline`).
