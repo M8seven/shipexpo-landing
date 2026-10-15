@@ -219,7 +219,7 @@ nav.scrolled {
   border: 1px solid var(--border-bright);
   padding: 8px 16px;
   border-radius: 4px;
-  transition: background 0.2s !important, color 0.2s !important, border-color 0.2s !important, box-shadow 0.2s !important;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s !important;
 }
 
 .nav-cta:hover {
