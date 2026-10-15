@@ -121,25 +121,25 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <div class="code-lang-badge">TypeScript</div>
           </div>
           <pre><span class="cm">// JWT refresh + device token rotation</span>
-<span class="kw">import</span> <span class="pu">{</span> <span class="var">Router</span><span class="pu">,</span> <span class="var">Request</span><span class="pu">,</span> <span class="var">Response</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'express'</span>
-<span class="kw">import</span> <span class="pu">{</span> <span class="fn">signAccess</span><span class="pu">,</span> <span class="fn">signRefresh</span><span class="pu">,</span> <span class="fn">verify</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'../lib/jwt'</span>
-<span class="kw">import</span> <span class="pu">{</span> <span class="var">db</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'../lib/db'</span>
+<span class="kw">import</span> <span class="pu">&#123;</span> <span class="var">Router</span><span class="pu">,</span> <span class="var">Request</span><span class="pu">,</span> <span class="var">Response</span> <span class="pu">&#125;</span> <span class="kw">from</span> <span class="str">'express'</span>
+<span class="kw">import</span> <span class="pu">&#123;</span> <span class="fn">signAccess</span><span class="pu">,</span> <span class="fn">signRefresh</span><span class="pu">,</span> <span class="fn">verify</span> <span class="pu">&#125;</span> <span class="kw">from</span> <span class="str">'../lib/jwt'</span>
+<span class="kw">import</span> <span class="pu">&#123;</span> <span class="var">db</span> <span class="pu">&#125;</span> <span class="kw">from</span> <span class="str">'../lib/db'</span>
 
 <span class="kw">const</span> <span class="var">router</span> <span class="pu">=</span> <span class="fn">Router</span><span class="pu">()</span>
 
-<span class="var">router</span><span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="str">'/refresh'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span><span class="var">req</span><span class="pu">:</span> <span class="var">Request</span><span class="pu">,</span> <span class="var">res</span><span class="pu">:</span> <span class="var">Response</span><span class="pu">)</span> <span class="pu">=&gt;</span> <span class="pu">{</span>
-  <span class="kw">const</span> <span class="pu">{</span> <span class="prop">token</span> <span class="pu">}</span> <span class="pu">=</span> <span class="var">req</span><span class="pu">.</span><span class="prop">body</span>
+<span class="var">router</span><span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="str">'/refresh'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span><span class="var">req</span><span class="pu">:</span> <span class="var">Request</span><span class="pu">,</span> <span class="var">res</span><span class="pu">:</span> <span class="var">Response</span><span class="pu">)</span> <span class="pu">=&gt;</span> <span class="pu">&#123;</span>
+  <span class="kw">const</span> <span class="pu">&#123;</span> <span class="prop">token</span> <span class="pu">&#125;</span> <span class="pu">=</span> <span class="var">req</span><span class="pu">.</span><span class="prop">body</span>
   <span class="kw">const</span> <span class="var">payload</span> <span class="pu">=</span> <span class="kw">await</span> <span class="fn">verify</span><span class="pu">(</span><span class="var">token</span><span class="pu">,</span> <span class="str">'refresh'</span><span class="pu">)</span>
 
   <span class="cm">// rotation: old token is invalidated on use</span>
-  <span class="kw">await</span> <span class="var">db</span><span class="pu">.</span><span class="prop">refreshToken</span><span class="pu">.</span><span class="fn">delete</span><span class="pu">({</span> <span class="prop">where</span><span class="pu">:</span> <span class="pu">{</span> <span class="prop">token</span> <span class="pu">}</span> <span class="pu">})</span>
+  <span class="kw">await</span> <span class="var">db</span><span class="pu">.</span><span class="prop">refreshToken</span><span class="pu">.</span><span class="fn">delete</span><span class="pu">(&#123;</span> <span class="prop">where</span><span class="pu">:</span> <span class="pu">&#123;</span> <span class="prop">token</span> <span class="pu">&#125;</span> <span class="pu">&#125;)</span>
   <span class="kw">const</span> <span class="var">next</span> <span class="pu">=</span> <span class="kw">await</span> <span class="fn">signRefresh</span><span class="pu">(</span><span class="var">payload</span><span class="pu">.</span><span class="prop">userId</span><span class="pu">)</span>
 
-  <span class="var">res</span><span class="pu">.</span><span class="fn">json</span><span class="pu">({</span>
+  <span class="var">res</span><span class="pu">.</span><span class="fn">json</span><span class="pu">(&#123;</span>
     <span class="prop">access</span><span class="pu">:</span>   <span class="kw">await</span> <span class="fn">signAccess</span><span class="pu">(</span><span class="var">payload</span><span class="pu">.</span><span class="prop">userId</span><span class="pu">),</span>
     <span class="prop">refresh</span><span class="pu">:</span>  <span class="var">next</span><span class="pu">,</span>
-  <span class="pu">})</span>
-<span class="pu">})</span>
+  <span class="pu">&#125;)</span>
+<span class="pu">&#125;)</span>
 
 <span class="kw">export default</span> <span class="var">router</span></pre>
         </div>
@@ -155,27 +155,27 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <div class="code-lang-badge">TypeScript</div>
           </div>
           <pre><span class="cm">// Secure token storage via expo-secure-store</span>
-<span class="kw">import</span> <span class="pu">{</span> <span class="fn">useState</span><span class="pu">,</span> <span class="fn">useEffect</span><span class="pu">,</span> <span class="fn">useCallback</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> <span class="pu">&#123;</span> <span class="fn">useState</span><span class="pu">,</span> <span class="fn">useEffect</span><span class="pu">,</span> <span class="fn">useCallback</span> <span class="pu">&#125;</span> <span class="kw">from</span> <span class="str">'react'</span>
 <span class="kw">import</span> <span class="pu">*</span> <span class="kw">as</span> <span class="var">SecureStore</span> <span class="kw">from</span> <span class="str">'expo-secure-store'</span>
-<span class="kw">import</span> <span class="pu">{</span> <span class="var">api</span> <span class="pu">}</span> <span class="kw">from</span> <span class="str">'../lib/api'</span>
+<span class="kw">import</span> <span class="pu">&#123;</span> <span class="var">api</span> <span class="pu">&#125;</span> <span class="kw">from</span> <span class="str">'../lib/api'</span>
 
-<span class="kw">export function</span> <span class="fn">useAuth</span><span class="pu">()</span> <span class="pu">{</span>
+<span class="kw">export function</span> <span class="fn">useAuth</span><span class="pu">()</span> <span class="pu">&#123;</span>
   <span class="kw">const</span> <span class="pu">[</span><span class="var">user</span><span class="pu">,</span> <span class="fn">setUser</span><span class="pu">]</span> <span class="pu">=</span> <span class="fn">useState</span><span class="pu">&lt;</span><span class="var">User</span> <span class="pu">|</span> <span class="kw">null</span><span class="pu">&gt;(</span><span class="kw">null</span><span class="pu">)</span>
 
-  <span class="fn">useEffect</span><span class="pu">(() =&gt;</span> <span class="pu">{</span>
+  <span class="fn">useEffect</span><span class="pu">(() =&gt;</span> <span class="pu">&#123;</span>
     <span class="var">SecureStore</span><span class="pu">.</span><span class="fn">getItemAsync</span><span class="pu">(</span><span class="str">'access_token'</span><span class="pu">)</span>
       <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span><span class="var">token</span> <span class="pu">=&gt;</span> <span class="var">token</span> <span class="pu">&amp;&amp;</span> <span class="var">api</span><span class="pu">.</span><span class="fn">me</span><span class="pu">(</span><span class="var">token</span><span class="pu">))</span>
       <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span><span class="fn">setUser</span><span class="pu">)</span>
-  <span class="pu">},</span> <span class="pu">[])</span>
+  <span class="pu">&#125;,</span> <span class="pu">[])</span>
 
-  <span class="kw">const</span> <span class="fn">signOut</span> <span class="pu">=</span> <span class="fn">useCallback</span><span class="pu">(</span><span class="kw">async</span> <span class="pu">() =&gt;</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="fn">signOut</span> <span class="pu">=</span> <span class="fn">useCallback</span><span class="pu">(</span><span class="kw">async</span> <span class="pu">() =&gt;</span> <span class="pu">&#123;</span>
     <span class="kw">await</span> <span class="var">SecureStore</span><span class="pu">.</span><span class="fn">deleteItemAsync</span><span class="pu">(</span><span class="str">'access_token'</span><span class="pu">)</span>
     <span class="kw">await</span> <span class="var">SecureStore</span><span class="pu">.</span><span class="fn">deleteItemAsync</span><span class="pu">(</span><span class="str">'refresh_token'</span><span class="pu">)</span>
     <span class="fn">setUser</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
-  <span class="pu">},</span> <span class="pu">[])</span>
+  <span class="pu">&#125;,</span> <span class="pu">[])</span>
 
-  <span class="kw">return</span> <span class="pu">{</span> <span class="prop">user</span><span class="pu">,</span> <span class="fn">signOut</span> <span class="pu">}</span>
-<span class="pu">}</span></pre>
+  <span class="kw">return</span> <span class="pu">&#123;</span> <span class="prop">user</span><span class="pu">,</span> <span class="fn">signOut</span> <span class="pu">&#125;</span>
+<span class="pu">&#125;</span></pre>
         </div>
       </div>
     </div>
@@ -188,10 +188,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <div class="code-file-name">package.json</div>
             <div class="code-lang-badge">JSON</div>
           </div>
-          <pre><span class="pu">{</span>
+          <pre><span class="pu">&#123;</span>
   <span class="prop">"name"</span><span class="pu">:</span>        <span class="str">"my-app"</span><span class="pu">,</span>
   <span class="prop">"version"</span><span class="pu">:</span>     <span class="str">"1.0.0"</span><span class="pu">,</span>
-  <span class="prop">"dependencies"</span><span class="pu">:</span> <span class="pu">{</span>
+  <span class="prop">"dependencies"</span><span class="pu">:</span> <span class="pu">&#123;</span>
     <span class="prop">"expo"</span><span class="pu">:</span>                      <span class="str">"~52.0.0"</span><span class="pu">,</span>
     <span class="prop">"expo-router"</span><span class="pu">:</span>              <span class="str">"~4.0.0"</span><span class="pu">,</span>
     <span class="prop">"expo-secure-store"</span><span class="pu">:</span>        <span class="str">"~14.0.0"</span><span class="pu">,</span>
@@ -203,13 +203,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <span class="prop">"@prisma/client"</span><span class="pu">:</span>            <span class="str">"^6.0.0"</span><span class="pu">,</span>
     <span class="prop">"socket.io"</span><span class="pu">:</span>                 <span class="str">"^4.8.0"</span><span class="pu">,</span>
     <span class="prop">"jsonwebtoken"</span><span class="pu">:</span>              <span class="str">"^9.0.0"</span>
-  <span class="pu">},</span>
-  <span class="prop">"scripts"</span><span class="pu">:</span> <span class="pu">{</span>
+  <span class="pu">&#125;,</span>
+  <span class="prop">"scripts"</span><span class="pu">:</span> <span class="pu">&#123;</span>
     <span class="prop">"dev"</span><span class="pu">:</span>     <span class="str">"concurrently \"expo start\" \"npm run server\""</span><span class="pu">,</span>
     <span class="prop">"server"</span><span class="pu">:</span>  <span class="str">"tsx watch server/index.ts"</span><span class="pu">,</span>
     <span class="prop">"deploy"</span><span class="pu">:</span>  <span class="str">"eas build --platform all &amp;&amp; fly deploy"</span>
-  <span class="pu">}</span>
-<span class="pu">}</span></pre>
+  <span class="pu">&#125;</span>
+<span class="pu">&#125;</span></pre>
         </div>
       </div>
     </div>
